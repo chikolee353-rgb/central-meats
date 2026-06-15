@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Central Meats — Devine Meats</title>
+  <style>
+    :root{--accent:#b22222;--muted:#666}
+    body{font-family:Segoe UI,system-ui,Arial,sans-serif;margin:0;background:#fafafa;color:#111}
+    header{background:linear-gradient(90deg,var(--accent),#8b0000);color:white;padding:20px 16px;display:flex;align-items:center;justify-content:space-between}
+    .brand{font-weight:700;font-size:1.25rem}
+    .sub{font-size:0.9rem;color:rgba(255,255,255,0.9)}
+    nav{display:flex;gap:8px}
+    button.menu{background:rgba(255,255,255,0.12);border:0;color:white;padding:8px 12px;border-radius:6px;cursor:pointer}
+    main{padding:20px;max-width:1100px;margin:0 auto}
+    .catalog{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+    .card{background:white;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);overflow:hidden}
+    .card img{width:100%;height:180px;object-fit:cover;display:block}
+    .card-body{padding:12px}
+    .product-title{font-weight:600;margin:0 0 6px}
+    .meta{color:var(--muted);font-size:0.9rem;margin-bottom:8px}
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    .controls input[type=number],.controls input[type=text]{width:100px;padding:6px;border:1px solid #ddd;border-radius:6px}
+    .controls button{background:var(--accent);color:white;border:0;padding:8px 10px;border-radius:6px;cursor:pointer}
+    .cart{position:fixed;right:16px;bottom:16px;background:#fff;padding:12px;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.12);width:260px}
+    .cart h4{margin:0 0 8px}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:opacity .15s}
+    .modal.open{visibility:visible;opacity:1}
+    .modal .panel{background:white;padding:18px;border-radius:8px;max-width:520px;width:96%}
+    footer{padding:14px;text-align:center;color:var(--muted);font-size:0.95rem}
+    .small{font-size:0.85rem;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="brand">Central Meats — Devine Meats</div>
+      <div class="sub">Located in Harare opposite Fidelity Tower • Phone: 0781653170</div>
+    </div>
+    <nav>
+      <button class="menu" id="btnCompany">Company Information</button>
+      <button class="menu" id="btnContacts">Contacts</button>
+      <button class="menu" id="btnNumber">Number</button>
+      <button class="menu" id="btnExit">Exit</button>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Our Sausage Catalogue</h2>
+    <p class="small">Click "Update" to change a product's price or stock. Changes are saved locally in your browser.</p>
+
+    <section class="catalog" id="catalog"></section>
+  </main>
+
+  <div class="cart" id="cart">
+    <h4>Cart</h4>
+    <div id="cartItems">No items</div>
+    <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+      <strong id="cartTotal">Total: $0.00</strong>
+      <button id="checkout">Checkout</button>
+    </div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="panel" id="modalPanel"></div>
+  </div>
+
+  <footer>
+    Central Meats — Devine Meats • Harare opposite Fidelity Tower • 0781653170
+  </footer>
+
+  <script>
+    // Default product data
+    const defaultProducts = [
+      {id:'p1',name:'Classic Pork Sausage',price:4.50,stock:120,image:'IMG-20260513-WA0015.jpg'},
+      {id:'p2',name:'Spicy Beef Sausage',price:5.25,stock:80,image:'IMG-20260513-WA0016.jpg'},
+      {id:'p3',name:'Chicken & Herb Sausage',price:3.75,stock:200,image:'IMG-20260513-WA0017.jpg'},
+      {id:'p4',name:'Beef Sausage Pack',price:6.00,stock:90,image:'IMG-20260513-WA0022.jpg'},
+      {id:'p5',name:'Smoked Sausage Mix',price:5.80,stock:70,image:'IMG-20260513-WA0027.jpg'},
+      {id:'p6',name:'Premium Sausage Tray',price:7.20,stock:50,image:'IMG-20260513-WA0041.jpg'}
+    ];
+
+    const STORAGE_KEY = 'central_meats_products_v1';
+    function loadProducts(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return defaultProducts.slice();
+        const parsed = JSON.parse(raw);
+        // Merge defaults for any missing fields
+        return defaultProducts.map(d=>Object.assign({},d,parsed.find(p=>p.id===d.id)||{}));
+      }catch(e){return defaultProducts.slice();}
+    }
+    function saveProducts(products){localStorage.setItem(STORAGE_KEY,JSON.stringify(products));}
+
+    let products = loadProducts();
+    const catalogEl = document.getElementById('catalog');
+    const cart = {};
+
+    function renderCatalog(){
+      catalogEl.innerHTML = '';
+      products.forEach(p=>{
+        const card = document.createElement('div');card.className='card';
+        card.innerHTML = `
+          <img src="${p.image}" alt="${p.name}">
+          <div class="card-body">
+            <div class="product-title">${p.name}</div>
+            <div class="meta">Price: $<span data-price>${p.price.toFixed(2)}</span> • Stock: <span data-stock>${p.stock}</span></div>
+            <div class="controls">
+              <input type="number" min="0" step="0.01" value="${p.price.toFixed(2)}" data-input-price placeholder="Price">
+              <input type="number" min="0" step="1" value="${p.stock}" data-input-stock placeholder="Stock">
+              <button data-update>Update</button>
+              <input type="number" min="1" max="${p.stock}" value="1" data-qty style="width:80px">
+              <button data-add>Add to cart</button>
+            </div>
+          </div>
+        `;
+        // wire events
+        const btnUpdate = card.querySelector('[data-update]');
+        const inPrice = card.querySelector('[data-input-price]');
+        const inStock = card.querySelector('[data-input-stock]');
+        const btnAdd = card.querySelector('[data-add]');
+        const inQty = card.querySelector('[data-qty]');
+
+        btnUpdate.addEventListener('click',()=>{
+          const newPrice = parseFloat(inPrice.value) || 0;
+          const newStock = parseInt(inStock.value) || 0;
+          p.price = Math.max(0,Math.round(newPrice*100)/100);
+          p.stock = Math.max(0,newStock);
+          saveProducts(products);
+          renderCatalog();
+        });
+
+        btnAdd.addEventListener('click',()=>{
+          const qty = Math.max(1,Math.min(p.stock,parseInt(inQty.value)||1));
+          if(qty>p.stock){alert('Not enough stock');return}
+          cart[p.id] = (cart[p.id]||0)+qty;
+          p.stock -= qty;
+          saveProducts(products);
+          renderCatalog();
+          renderCart();
+        });
+
+        catalogEl.appendChild(card);
+      });
+    }
+
+    function renderCart(){
+      const el = document.getElementById('cartItems');
+      if(Object.keys(cart).length===0){el.textContent='No items';document.getElementById('cartTotal').textContent='Total: $0.00';return}
+      el.innerHTML='';let total=0;
+      Object.entries(cart).forEach(([id,qty])=>{
+        const p = products.find(x=>x.id===id) || defaultProducts.find(x=>x.id===id)||{name:id,price:0};
+        const line = document.createElement('div');
+        const subtotal = (p.price*qty);
+        total += subtotal;
+        line.textContent = `${p.name} × ${qty} — $${subtotal.toFixed(2)}`;
+        el.appendChild(line);
+      });
+      document.getElementById('cartTotal').textContent = `Total: $${total.toFixed(2)}`;
+    }
+
+    // Menu buttons
+    document.getElementById('btnCompany').addEventListener('click',()=>openModal('<h3>Company Information</h3><p>Central Meats — Devine Meats supplies quality sausages across Harare. Located opposite Fidelity Tower.</p>'));
+    document.getElementById('btnContacts').addEventListener('click',()=>openModal('<h3>Contacts</h3><p>Phone: <strong>0781653170</strong><br>Email: info@centralmeats.example (replace with real email)</p>'));
+    document.getElementById('btnNumber').addEventListener('click',()=>{window.location.href='tel:0781653170'});
+    document.getElementById('btnExit').addEventListener('click',()=>{try{window.close();}catch(e){alert('Close the tab to exit.')}});
+
+    // modal
+    const modal = document.getElementById('modal');
+    const modalPanel = document.getElementById('modalPanel');
+    function openModal(html){modalPanel.innerHTML = html + '<div style="text-align:right;margin-top:12px"><button id="closeModal">Close</button></div>';modal.classList.add('open');document.getElementById('closeModal').addEventListener('click',closeModal)}
+    function closeModal(){modal.classList.remove('open')}
+    modal.addEventListener('click',(e)=>{if(e.target===modal)closeModal()});
+
+    document.getElementById('checkout').addEventListener('click',()=>{
+      if(Object.keys(cart).length===0){alert('Cart is empty');return}
+      alert('Checkout simulated — contact '+ '0781653170' + ' to complete the order.');
+      // clear cart
+      for(const k in cart) delete cart[k]; renderCart();
+    });
+
+    // initial render
+    renderCatalog();
+    renderCart();
+  </script>
+</body>
+</html>
