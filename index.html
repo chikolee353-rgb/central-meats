@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Central Meats — Devine Meats</title>
+  <title>Devine Meats</title>
   <style>
     :root{--accent:#b22222;--muted:#666}
-    body{font-family:Segoe UI,system-ui,Arial,sans-serif;margin:0;background:#fafafa;color:#111}
+    body{font-family:Segoe UI,system-ui,Arial,sans-serif;margin:0;background:url('1781600266148.jpg') center/cover fixed;color:#111}
     header{background:linear-gradient(90deg,var(--accent),#8b0000);color:white;padding:20px 16px;display:flex;align-items:center;justify-content:space-between}
     .brand{font-weight:700;font-size:1.25rem}
     .sub{font-size:0.9rem;color:rgba(255,255,255,0.9)}
@@ -34,7 +34,7 @@
 <body>
   <header>
     <div>
-      <div class="brand">Central Meats — Devine Meats</div>
+      <div class="brand">Devine Meats</div>
       <div class="sub">Located in Harare opposite Fidelity Tower • Phone: 0781653170</div>
     </div>
     <nav>
@@ -66,18 +66,25 @@
   </div>
 
   <footer>
-    Central Meats — Devine Meats • Harare opposite Fidelity Tower • 0781653170
+    Devine Meats • Harare opposite Fidelity Tower • Phone: 0781653170
+    <div style="margin-top:12px">
+      <a href="https://wa.me/0781653170" target="_blank" style="margin:0 8px;text-decoration:none;color:white">📱 WhatsApp</a>
+      <a href="mailto:Chikamhimathias6@gmail.com" style="margin:0 8px;text-decoration:none;color:white">📧 Gmail</a>
+      <a href="https://facebook.com/profile.php?id=Mathias Chikamhi" target="_blank" style="margin:0 8px;text-decoration:none;color:white">f Facebook</a>
+    </div>
   </footer>
 
   <script>
     // Default product data
     const defaultProducts = [
-      {id:'p1',name:'Classic Pork Sausage',price:4.50,stock:120,image:'IMG-20260513-WA0015.jpg'},
-      {id:'p2',name:'Spicy Beef Sausage',price:5.25,stock:80,image:'IMG-20260513-WA0016.jpg'},
-      {id:'p3',name:'Chicken & Herb Sausage',price:3.75,stock:200,image:'IMG-20260513-WA0017.jpg'},
-      {id:'p4',name:'Beef Sausage Pack',price:6.00,stock:90,image:'IMG-20260513-WA0022.jpg'},
-      {id:'p5',name:'Smoked Sausage Mix',price:5.80,stock:70,image:'IMG-20260513-WA0027.jpg'},
-      {id:'p6',name:'Premium Sausage Tray',price:7.20,stock:50,image:'IMG-20260513-WA0041.jpg'}
+      {id:'p1',name:'Mince',price:15.00,stock:30,image:'IMG-20260513-WA0015.jpg'},
+      {id:'p2',name:'Russian',price:15.00,stock:80,image:'IMG-20260513-WA0016.jpg'},
+      {id:'p3',name:'Smoked Russian',price:15.00,stock:20,image:'IMG-20260513-WA0017.jpg'},
+      {id:'p4',name:'Burger Patties',price:15.00,stock:40,image:'IMG-20260513-WA0022.jpg'},
+      {id:'p5',name:'Chicken Feets',price:15.00,stock:5,image:'IMG-20260513-WA0027.jpg'},
+      {id:'p6',name:'Chicken Bones',price:30.00,stock:10,image:'IMG-20260513-WA0041.jpg'},
+      {id:'p7',name:'Chicken Necks',price:15.00,stock:5,image:'IMG-20260513-WA0015.jpg'},
+      {id:'p8',name:'Chicken Heads',price:10.00,stock:5,image:'IMG-20260513-WA0016.jpg'}
     ];
 
     const STORAGE_KEY = 'central_meats_products_v1';
@@ -106,29 +113,14 @@
             <div class="product-title">${p.name}</div>
             <div class="meta">Price: $<span data-price>${p.price.toFixed(2)}</span> • Stock: <span data-stock>${p.stock}</span></div>
             <div class="controls">
-              <input type="number" min="0" step="0.01" value="${p.price.toFixed(2)}" data-input-price placeholder="Price">
-              <input type="number" min="0" step="1" value="${p.stock}" data-input-stock placeholder="Stock">
-              <button data-update>Update</button>
               <input type="number" min="1" max="${p.stock}" value="1" data-qty style="width:80px">
               <button data-add>Add to cart</button>
             </div>
           </div>
         `;
         // wire events
-        const btnUpdate = card.querySelector('[data-update]');
-        const inPrice = card.querySelector('[data-input-price]');
-        const inStock = card.querySelector('[data-input-stock]');
         const btnAdd = card.querySelector('[data-add]');
         const inQty = card.querySelector('[data-qty]');
-
-        btnUpdate.addEventListener('click',()=>{
-          const newPrice = parseFloat(inPrice.value) || 0;
-          const newStock = parseInt(inStock.value) || 0;
-          p.price = Math.max(0,Math.round(newPrice*100)/100);
-          p.stock = Math.max(0,newStock);
-          saveProducts(products);
-          renderCatalog();
-        });
 
         btnAdd.addEventListener('click',()=>{
           const qty = Math.max(1,Math.min(p.stock,parseInt(inQty.value)||1));
