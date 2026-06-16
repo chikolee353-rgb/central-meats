@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Devine Meats</title>
   <style>
-    :root{--accent:#b22222;--muted:#666}
-    body{font-family:Segoe UI,system-ui,Arial,sans-serif;margin:0;background:url('1781600266148.jpg') center/cover fixed;color:#111}
-    header{background:linear-gradient(90deg,var(--accent),#8b0000);color:white;padding:20px 16px;display:flex;align-items:center;justify-content:space-between}
+    :root{--accent:#0b5cff;--muted:#556;--text:#071426}
+    body{font-family:Segoe UI,system-ui,Arial,sans-serif;margin:0;background-color:#f7fbff;color:var(--text)}
+    header{background:linear-gradient(90deg,var(--accent),#0048d0);color:white;padding:20px 16px;display:flex;align-items:center;justify-content:space-between}
     .brand{font-weight:700;font-size:1.25rem}
-    .sub{font-size:0.9rem;color:rgba(255,255,255,0.9)}
+    .sub{font-size:0.9rem;color:rgba(255,255,255,0.95)}
     nav{display:flex;gap:8px}
     button.menu{background:rgba(255,255,255,0.12);border:0;color:white;padding:8px 12px;border-radius:6px;cursor:pointer}
     main{padding:20px;max-width:1100px;margin:0 auto}
     .catalog{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
-    .card{background:white;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);overflow:hidden}
+    .card{background:white;border-radius:8px;box-shadow:0 2px 8px rgba(2,6,23,0.06);overflow:hidden;color:var(--text)}
     .card img{width:100%;height:180px;object-fit:cover;display:block}
     .card-body{padding:12px}
     .product-title{font-weight:600;margin:0 0 6px}
@@ -22,13 +22,20 @@
     .controls{display:flex;gap:8px;flex-wrap:wrap}
     .controls input[type=number],.controls input[type=text]{width:100px;padding:6px;border:1px solid #ddd;border-radius:6px}
     .controls button{background:var(--accent);color:white;border:0;padding:8px 10px;border-radius:6px;cursor:pointer}
-    .cart{position:fixed;right:16px;bottom:16px;background:#fff;padding:12px;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.12);width:260px}
+    .cart{position:fixed;right:16px;bottom:16px;background:#fff;padding:12px;border-radius:8px;box-shadow:0 6px 20px rgba(2,6,23,0.12);width:260px}
     .cart h4{margin:0 0 8px}
     .modal{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:opacity .15s}
     .modal.open{visibility:visible;opacity:1}
     .modal .panel{background:white;padding:18px;border-radius:8px;max-width:520px;width:96%}
-    footer{padding:14px;text-align:center;color:var(--muted);font-size:0.95rem}
+    footer{padding:14px;text-align:center;color:white;background:var(--accent);font-size:0.95rem}
     .small{font-size:0.85rem;color:var(--muted)}
+
+    /* Floating contact buttons */
+    .contact-fab{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:10px;z-index:999}
+    .contact-fab a{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:999px;color:white;text-decoration:none;font-weight:700;box-shadow:0 6px 18px rgba(2,6,23,0.12)}
+    .contact-fab a.whatsapp{background:#25D366}
+    .contact-fab a.email{background:#D14836}
+    .contact-fab svg{width:20px;height:20px;flex:0 0 20px}
   </style>
 </head>
 <body>
@@ -67,12 +74,22 @@
 
   <footer>
     Devine Meats • Harare opposite Fidelity Tower • Phone: 0781653170
-    <div style="margin-top:12px">
-      <a href="https://wa.me/0781653170" target="_blank" style="margin:0 8px;text-decoration:none;color:white">📱 WhatsApp</a>
-      <a href="mailto:Chikamhimathias6@gmail.com" style="margin:0 8px;text-decoration:none;color:white">📧 Gmail</a>
-      <a href="https://facebook.com/profile.php?id=Mathias Chikamhi" target="_blank" style="margin:0 8px;text-decoration:none;color:white">f Facebook</a>
-    </div>
+    <div style="margin-top:8px">Follow us on Facebook: <a href="https://facebook.com/profile.php?id=Mathias Chikamhi" target="_blank" style="color:white;text-decoration:underline;margin-left:6px">Facebook</a></div>
   </footer>
+
+  <!-- Prominent contact buttons -->
+  <div class="contact-fab" aria-hidden="false">
+    <a class="whatsapp" href="https://wa.me/0781653170" target="_blank" aria-label="Chat on WhatsApp">
+      <!-- WhatsApp SVG -->
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M20.52 3.48A11.93 11.93 0 0 0 12 0C5.373 0 .012 5.373 0 12c0 2.105.55 4.17 1.6 5.98L0 24l6.3-1.63A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12 0-1.98-.48-3.85-1.48-5.52z" fill="#25D366"/><path d="M17.2 14.2c-.3-.15-1.78-.88-2.06-.98-.28-.1-.48-.15-.68.15-.2.3-.78.98-.96 1.18-.18.2-.36.22-.66.07-.3-.15-1.28-.47-2.43-1.48-.9-.8-1.5-1.78-1.68-2.08-.18-.3-.02-.46.13-.61.13-.13.3-.36.45-.54.15-.18.2-.3.3-.5.1-.2 0-.38-.05-.54-.05-.15-.68-1.62-.93-2.22-.24-.58-.5-.5-.68-.5-.18 0-.38-.01-.58-.01-.2 0-.54.07-.82.33-.28.27-1.02 1-1.02 2.44 0 1.43 1.05 2.81 1.2 3.01.15.2 2.07 3.3 5.02 4.62 2.95 1.32 2.95.88 3.48.82.53-.06 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.18-.56-.33z" fill="#fff"/></svg>
+      WhatsApp
+    </a>
+    <a class="email" href="mailto:Chikamhimathias6@gmail.com" aria-label="Send email">
+      <!-- Gmail-like envelope SVG -->
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 13.5L2 6.75V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6.75L12 13.5z" fill="#fff" opacity=".9"/><path d="M20 4H4a2 2 0 0 0-2 2v.38l10 6.87 10-6.87V6a2 2 0 0 0-2-2z" fill="#D14836"/></svg>
+      Email
+    </a>
+  </div>
 
   <script>
     // Default product data
